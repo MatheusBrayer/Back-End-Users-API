@@ -1,5 +1,8 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/UserService";
+import { CreateUserDTO } from "../dtos/CreateUserDTO";
+import { UpdateUserDTO } from "../dtos/UpdateUserDTO";
+import { UserResponseDTO } from "../dtos/UserResponseDTO";
 
 export class UserController {
 
@@ -7,15 +10,17 @@ export class UserController {
 
   async create(req: Request, res: Response) {
     try {
-      const { name, email, password } = req.body;
+      const { name, email, password }: CreateUserDTO = req.body;
 
       const user = await this.service.createUser(name, email, password);
 
-      return res.status(201).json({
+      const response: UserResponseDTO = {
         id: user.id,
         name: user.name,
         email: user.email
-      });
+      };
+
+      return res.status(201).json(response);
 
     } catch (error: any) {
       return res.status(400).json({
@@ -27,7 +32,7 @@ export class UserController {
   async list(req: Request, res: Response) {
     const users = await this.service.listUsers();
 
-    const response = users.map(user => ({
+    const response: UserResponseDTO[] = users.map(user => ({
       id: user.id,
       name: user.name,
       email: user.email
@@ -42,11 +47,13 @@ export class UserController {
 
       const user = await this.service.getUserById(id);
 
-      return res.json({
+      const response: UserResponseDTO = {
         id: user.id,
         name: user.name,
         email: user.email
-      });
+      };
+
+      return res.json(response);
 
     } catch (error: any) {
       return res.status(404).json({
@@ -58,15 +65,17 @@ export class UserController {
   async update(req: Request, res: Response) {
     try {
       const id = Number(req.params.id);
-      const { name, email, password } = req.body;
+      const { name, email, password }: UpdateUserDTO = req.body;
 
       const user = await this.service.updateUser(id, name, email, password);
 
-      return res.json({
+      const response: UserResponseDTO = {
         id: user.id,
         name: user.name,
         email: user.email
-      });
+      };
+
+      return res.json(response);
 
     } catch (error: any) {
       return res.status(400).json({
@@ -90,3 +99,4 @@ export class UserController {
     }
   }
 }
+``
